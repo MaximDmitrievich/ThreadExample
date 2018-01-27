@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ThreadExample
+namespace AsyncExample
 {
     class Program
     {
@@ -21,35 +21,45 @@ namespace ThreadExample
             Console.WriteLine("Result factorial {0}, from main thread", result);
         }
 
-        public static void FactThread(int iterations) // Функция, вычисляющая факториал, запускаемая через новый поток
+        static async void DisplayAsyncFact(int iterations) // Функция, ожидающая выполнение функции вычисления факториала
         {
-            int result = 1;
-            for (int i = 1; i <= iterations; i++)
-            {
-                result *= i;
-                Console.WriteLine("{0}\t{1}\ts\t{2}", i, result, Thread.CurrentThread.Name);
-                Thread.Sleep(400);
-            }
-            Console.WriteLine("Result factorial {0}, from standart thread", result);
+            int result = await FactAsync(iterations);
+            Thread.Sleep(400);
+            Console.WriteLine("Result factorial {0}, from async thread", result);
         }
 
+        static Task<int> FactAsync(int iterations) //Асинхронная функция вычисления факториала
+        {
+            int result = 1;
+
+            return Task.Run(() =>
+            {
+                Thread.CurrentThread.Name = "Асинхронный поток";
+                for (int i = 1; i <= iterations; i++)
+                {
+                    result *= i;
+                    Console.WriteLine("{0}\t{1}\ta\t{2}", i, result,
+                        Thread.CurrentThread.Name);
+                }
+                return result;
+            });
+        }
 
         static void Main(string[] args)
         {
+
             Console.Write("Insert iterations: ");
             int x = Int32.Parse(Console.ReadLine());
+
             Console.WriteLine("I\tV\tT\tTID");
 
-            //Создание и запуск нового потока
-            Thread th = new Thread(new ThreadStart(() => FactThread(x)));
-            th.Name = "Параллельный поток";
-            th.Start();
+            //Запуск функции в асинхронном потоке
+            DisplayAsyncFact(x);
 
             //Запуск функции в основном потоке
             Fact(x);
+
             Console.ReadKey();
         }
-
-        
     }
 }
