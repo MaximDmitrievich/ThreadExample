@@ -9,9 +9,10 @@ namespace ManyThreadsExample
 {
     class Program
     {
+        private static int result = 1;
         public static void FactThread(int iterations) // Функция, вычисляющая факториал, запускаемая через новый поток
         {
-            int result = 1;
+            result = 1;
             for (int i = 1; i <= iterations; i++)
             {
                 result *= i;

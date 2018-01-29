@@ -10,11 +10,11 @@ namespace MutexExample
     class Program
     {
         static Mutex mutexobj = new Mutex();
-
+        private static int result = 1;
         public static void FactThread(int iterations) // Функция, вычисляющая факториал, запускаемая через новый поток
         {
             mutexobj.WaitOne();
-            int result = 1;
+            result = 1;
             for (int i = 1; i <= iterations; i++)
             {
                 result *= i;
